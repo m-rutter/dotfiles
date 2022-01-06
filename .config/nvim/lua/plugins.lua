@@ -1,9 +1,7 @@
--- This file can be loaded by calling `lua require('plugins')` from your init.vim
-
 -- Only required if you have packer configured as `opt`
 vim.cmd [[packadd packer.nvim]]
 
-return require('packer').startup(function()
+require('packer').startup(function()
     -- Packer can manage itself
     use 'wbthomason/packer.nvim'
 
@@ -18,19 +16,22 @@ return require('packer').startup(function()
     -- Git
     use 'tpope/vim-fugitive'
     use 'tpope/vim-rhubarb'
+    
+    -- Icons
+    use 'kyazdani42/nvim-web-devicons'
+
+    -- Theme
+    use 'glepnir/zephyr-nvim'
 
     -- Syntax Highlighting
-    use {
+    use { 
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate'
     }
 
-    -- Icons
-    use 'kyazdani42/nvim-web-devicons'
-
     -- LSP
     use 'neovim/nvim-lspconfig'
-
+    use 'nvim-lua/lsp_extensions.nvim'
     use {
       "folke/trouble.nvim",
       requires = "kyazdani42/nvim-web-devicons",
@@ -42,4 +43,46 @@ return require('packer').startup(function()
         }
       end
     }
+
+    -- UI
+    use {
+      'nvim-lualine/lualine.nvim',
+      requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+    }
+    use {'edluffy/specs.nvim'}
+
+    use {
+    "folke/which-key.nvim",
+    config = function()
+      require("which-key").setup()
+      end
+    }
+
+    
+    -- Navigation
+    use 'preservim/nerdtree'
+    use {
+    'nvim-telescope/telescope.nvim',
+     requires = { {'nvim-lua/plenary.nvim'} }
+    }
+    use 'justinmk/vim-sneak'
+
+    -- Languages 
+    use 'cespare/vim-toml'
 end)
+
+
+-- Setup Tree Sitter
+require('nvim-treesitter.configs').setup {
+  ensure_installed = "maintained",
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = {'org'},
+  },
+  indent = {
+    enable = true
+  }
+}
+
+-- Setup airline theme
+require('lualine').setup()
