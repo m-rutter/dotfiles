@@ -1,11 +1,5 @@
 local nvim_lsp = require('lspconfig')
 
-nvim_lsp.rust_analyzer.setup{}
-
-nvim_lsp.eslint.setup{}
-
-nvim_lsp.tsserver.setup{}
-
 require('lsp_extensions').inlay_hints{ prefix = ' » ', highlight = 'Comment', enabled = {'ChainingHint'} } 
 
 local on_attach = function(client, bufnr)
@@ -46,10 +40,11 @@ for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     on_attach = on_attach,
     flags = {
-      debounce_text_changes = 150,
+      debounce_text_changes = 500,
     }
   }
 end
 
-
-
+vim.cmd [[
+  set signcolumn=number
+]]
