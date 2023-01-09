@@ -1,5 +1,3 @@
-vim.g.mapleader = ','
-
 local opt = vim.opt
 
 opt.expandtab = true
@@ -27,55 +25,40 @@ opt.expandtab = true
 opt.cmdheight = 2
 opt.updatetime = 300
 
--- Theme
-require('zephyr')
+vim.opt.termguicolors = true
 
--- Keybindings
-local map = vim.api.nvim_set_keymap
+vim.cmd[[colorscheme base16-ayu-mirage]]
+vim.cmd "set background=dark"
+vim.cmd "set cursorline"
+vim.cmd "set noshowcmd"
+vim.cmd "set noshowmode"
+vim.cmd "set cmdheight=1"
 
-map('n', '<C-l>', ':noh<CR>', {noremap = true}) -- clear highlighting
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
-map('v', '<leader>y', '"+y', {noremap = true}) -- copy into system clipboard
-map('n', '<leader>p', '"+p', {noremap = true}) -- paste from system clipboard
 
-map('n', '<leader>nn', ':NERDTreeToggle<CR>', {noremap = true}) -- toggle nerd tree 
-map('n', '<leader>nf', ':NERDTreeFind<CR>', {noremap = true}) -- find in nerd tree 
+--Set completeopt to have a better completion experience
+-- :help completeopt
+-- menuone: popup even when there's only one match
+-- noinsert: Do not insert text until a selection is made
+-- noselect: Do not select, force to select one from the menu
+-- shortness: avoid showing extra messages when using completion
+-- updatetime: set updatetime for CursorHold
+vim.opt.completeopt = {'menuone', 'noselect', 'noinsert'}
+vim.opt.shortmess = vim.opt.shortmess + { c = true}
+vim.api.nvim_set_option('updatetime', 300) 
 
--- Telescope
-vim.cmd [[
-    nnoremap <C-p> <cmd>Telescope find_files<cr>
-    nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-    nnoremap <leader>fb <cmd>Telescope buffers<cr>
-    nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+-- Fixed column for diagnostics to appear
+-- Show autodiagnostic popup on cursor hover_range
+-- Goto previous / next diagnostic warning / error 
+-- Show inlay_hints more frequently 
+vim.cmd([[
+set signcolumn=yes
+autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
+]])
 
-    " Completion
-    " Better completion
-    " menuone: popup even when there's only one match
-    " noinsert: Do not insert text until a selection is made
-    " noselect: Do not select, force user to select one from the menu
-    set completeopt=menuone,noinsert,noselect
-]]
 
--- stops the nerd tree buffer from being overwritten
-vim.cmd [[
-    autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-        \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-]]
-
-require('specs').setup{ 
-    show_jumps  = true,
-    min_jump = 30,
-    popup = {
-        delay_ms = 0, -- delay before popup displays
-        inc_ms = 10, -- time increments used for fade/resize effects 
-        blend = 10, -- starting blend, between 0-100 (fully transparent), see :h winblend
-        width = 10,
-        winhl = "PMenu",
-        fader = require('specs').linear_fader,
-        resizer = require('specs').shrink_resizer
-    },
-    ignore_filetypes = {},
-    ignore_buftypes = {
-        nofile = true,
-    },
-}
